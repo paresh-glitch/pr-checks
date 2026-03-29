@@ -71,4 +71,4 @@ jobs:
     needs: [lint, test, security, size-check]
     steps:
       - name: ready to merge
-        run: echo "all pr checks safe to merge
+        run: echo "all pr checks safe to merge"
