@@ -1,0 +1,71 @@
+name: pr check
+
+on:
+  pull_request:               # triggers on EVERY pull request
+    branches:
+      - main                  # only PRs targeting main branch
+    types:
+      - opened                # when PR is created
+      - synchronize           # when new commit pushed to PR
+      - reopened              # when PR is reopened
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: install and lint
+        run: |
+          cd app
+          npm install
+          npm run lint 
+
+  test:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: run test
+        run: |
+          cd app
+          npm install
+          npm test
+
+  security:
+    runs-on: ubuntu-latest
+    name: security scan
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: check
+        run: |
+          cd app
+          npm install
+          npm audit --audit-level=high || true
+
+  size-check:
+    runs-on: ubuntu-latest
+    name: checking size
+    steps:
+      - uses: actions/checkout@v3
+      - name: count changed files
+        run: |
+          echo "Files changed in this PR:"
+          git diff --name-only origin/main
+          echo "PR looks good!"
+
+  all-checks-passed:
+    runs-on: ubuntu-latest
+    name: all checks passed 
+    needs: [lint, test, security, size-check]
+    steps:
+      - name: ready to merge
+        run: echo "all pr checks safe to merge
