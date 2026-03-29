@@ -13,6 +13,13 @@ app.get('/health', (req, res) => {
     res.json({ status: 'healthy' });
 });
 
+app.get('/users', (req, res) => {
+    res.json([
+        { id: 1, name: 'Alice' },
+        { id: 2, name: 'Bob' }
+    ]);
+});
+
 const server = app.listen(PORT, () => {
     console.log(`App running on port ${PORT}`);
 });

@@ -56,8 +56,11 @@ jobs:
     name: checking size
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - name: count changed files
         run: |
+          git fetch origin main
           echo "Files changed in this PR:"
           git diff --name-only origin/main
           echo "PR looks good!"
@@ -68,4 +71,4 @@ jobs:
     needs: [lint, test, security, size-check]
     steps:
       - name: ready to merge
-        run: echo "all pr checks safe to merge
+        run: echo "all pr checks safe to merge"
